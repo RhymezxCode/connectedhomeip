@@ -66,7 +66,7 @@ object ChipClient {
       ChipDeviceController.loadJni()
       androidPlatform =
         AndroidChipPlatform(
-          AndroidBleManager(context),
+          AndroidBleManager(),
           PreferencesKeyValueStoreManager(context),
           PreferencesConfigurationManager(context),
           NsdManagerServiceResolver(context),

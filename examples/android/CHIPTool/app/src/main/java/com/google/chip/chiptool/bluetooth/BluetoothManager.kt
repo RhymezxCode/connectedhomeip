@@ -74,40 +74,40 @@ class BluetoothManager : BleCallback {
 
     return withTimeoutOrNull(10000) {
       callbackFlow {
-          val scanCallback =
-            object : ScanCallback() {
-              override fun onScanResult(callbackType: Int, result: ScanResult) {
-                val device = result.device
-                Log.i(TAG, "Bluetooth Device Scanned Addr: ${device.address}, Name ${device.name}")
+        val scanCallback =
+          object : ScanCallback() {
+            override fun onScanResult(callbackType: Int, result: ScanResult) {
+              val device = result.device
+              Log.i(TAG, "Bluetooth Device Scanned Addr: ${device.address}, Name ${device.name}")
 
-                val producerScope: ProducerScope<BluetoothDevice> = this@callbackFlow
-                if (producerScope.channel.isClosedForSend) {
-                  Log.w(TAG, "Bluetooth device was scanned, but channel is already closed")
-                } else {
-                  offer(device)
-                }
-              }
-
-              override fun onScanFailed(errorCode: Int) {
-                Log.e(TAG, "Scan failed $errorCode")
+              val producerScope: ProducerScope<BluetoothDevice> = this@callbackFlow
+              if (producerScope.channel.isClosedForSend) {
+                Log.w(TAG, "Bluetooth device was scanned, but channel is already closed")
+              } else {
+                offer(device)
               }
             }
 
-          val serviceData = getServiceData(discriminator)
-          val serviceDataMask = getServiceDataMask(isShortDiscriminator)
+            override fun onScanFailed(errorCode: Int) {
+              Log.e(TAG, "Scan failed $errorCode")
+            }
+          }
 
-          val scanFilter =
-            ScanFilter.Builder()
-              .setServiceData(ParcelUuid(UUID.fromString(CHIP_UUID)), serviceData, serviceDataMask)
-              .build()
+        val serviceData = getServiceData(discriminator)
+        val serviceDataMask = getServiceDataMask(isShortDiscriminator)
 
-          val scanSettings =
-            ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
+        val scanFilter =
+          ScanFilter.Builder()
+            .setServiceData(ParcelUuid(UUID.fromString(CHIP_UUID)), serviceData, serviceDataMask)
+            .build()
 
-          Log.i(TAG, "Starting Bluetooth scan")
-          scanner.startScan(listOf(scanFilter), scanSettings, scanCallback)
-          awaitClose { scanner.stopScan(scanCallback) }
-        }
+        val scanSettings =
+          ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
+
+        Log.i(TAG, "Starting Bluetooth scan")
+        scanner.startScan(listOf(scanFilter), scanSettings, scanCallback)
+        awaitClose { scanner.stopScan(scanCallback) }
+      }
         .first()
     }
   }

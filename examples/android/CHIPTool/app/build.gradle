@@ -3,15 +3,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 android {
-    compileSdkVersion 31
+    compileSdk 34
     ndkPath System.getenv("ANDROID_NDK_HOME")
 
     ndkVersion "23.2.8568313"
 
     defaultConfig {
+        namespace 'com.google.chip.chiptool'
+
         applicationId "com.google.chip.chiptool"
         minSdkVersion 24
-        targetSdkVersion 31
+        //noinspection EditedTargetSdkVersion
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -39,8 +42,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     packagingOptions {
@@ -50,6 +53,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
 
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
@@ -66,7 +70,7 @@ android {
         externalNativeBuild {
             cmake {
                 path file(matterBuildSrcDir + '/CMakeLists.txt')
-                version '3.10.2'
+                version '3.22.1'
             }
         }
     } else {
@@ -76,6 +80,7 @@ android {
             }
         }
     }
+
 }
 
 dependencies {
